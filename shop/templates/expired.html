@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Expired Stock Items – MediStock{% endblock %}
+
+{% block content %}
+<div class="med-card">
+  <div class="med-card-header">
+    <div>
+      <h2 class="med-card-title"><i class="fa fa-times-circle text-danger mr-2"></i> Expired Stock Inventory</h2>
+      <p class="text-muted small mb-0 mt-1">Expired items automatically quarantined from active stock</p>
+    </div>
+    {% if expired.all %}
+    <a href="{% url 'clear_exp' %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to clear all expired stock items?');">
+      <i class="fa fa-trash mr-1"></i> Clear All Expired Items
+    </a>
+    {% endif %}
+  </div>
+
+  {% if expired.all %}
+  <div class="table-responsive">
+    <table class="table-med">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Batch ID</th>
+          <th>Trade Name</th>
+          <th>Vendor</th>
+          <th>Purchase Price</th>
+          <th>Order Date</th>
+          <th>Expiry Date</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for med in expired.all %}
+        <tr>
+          <th scope="row" class="text-muted">{{ forloop.counter }}</th>
+          <td><code>{{ med.batch_id }}</code></td>
+          <td><strong>{{ med.medicine.trade_name }}</strong></td>
+          <td>{{ med.medicine.vendor.name }}</td>
+          <td>${{ med.medicine.purchasePrice }}</td>
+          <td>{{ med.order_date }}</td>
+          <td><span class="text-danger font-weight-semibold">{{ med.expiry_date }}</span></td>
+          <td><span class="badge badge-expired">{{ med.quantity }} units</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <i class="fa fa-check-circle text-success mb-3" style="font-size: 3rem;"></i>
+    <h4 class="text-secondary">No Expired Items</h4>
+    <p class="text-muted">Great! There are no expired medicine items in your inventory.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+

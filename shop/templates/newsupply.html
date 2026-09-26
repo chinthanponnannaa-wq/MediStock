@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Record New Supply – MediStock{% endblock %}
+
+{% block content %}
+<div class="med-card">
+  <div class="med-card-header">
+    <div>
+      <h2 class="med-card-title"><i class="fa fa-truck text-primary mr-2"></i> Select Supplier for Stock Intake</h2>
+      <p class="text-muted small mb-0 mt-1">Choose a supplier to record incoming medicine batches and update inventory</p>
+    </div>
+    <a href="{% url 'addvendor' %}" class="btn btn-primary-med">
+      <i class="fa fa-user-plus mr-1"></i> Add New Supplier
+    </a>
+  </div>
+
+  {% if vendors.all %}
+  <div class="table-responsive">
+    <table class="table-med">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Supplier ID</th>
+          <th>Company Name</th>
+          <th>Address</th>
+          <th>Contact Phone</th>
+          <th>Email Address</th>
+          <th class="text-right">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for vendor in vendors.all %}
+        <tr>
+          <th scope="row" class="text-muted">{{ forloop.counter }}</th>
+          <td><code>#{{ vendor.id }}</code></td>
+          <td><strong>{{ vendor.name }}</strong></td>
+          <td>{{ vendor.address }}</td>
+          <td><i class="fa fa-phone text-muted mr-1"></i>{{ vendor.phone }}</td>
+          <td><i class="fa fa-envelope text-muted mr-1"></i>{{ vendor.email }}</td>
+          <td class="text-right">
+            <a href="{% url 'newsupplymed' vendor.id %}" class="btn btn-sm btn-primary-med">
+              <i class="fa fa-plus-circle mr-1"></i> Record Supply
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <i class="fa fa-truck text-muted mb-3" style="font-size: 3rem;"></i>
+    <h4 class="text-secondary">No Suppliers Found</h4>
+    <p class="text-muted">Please add your first supplier before recording stock intake.</p>
+    <a href="{% url 'addvendor' %}" class="btn btn-primary-med mt-2">Add Supplier</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+

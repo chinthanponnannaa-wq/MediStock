@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block title %}Point of Sale – MediStock{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+  <!-- Left Column: Add Item Form -->
+  <div class="col-lg-5 mb-4">
+    <div class="med-card">
+      <div class="med-card-header">
+        <h2 class="med-card-title"><i class="fa fa-shopping-cart text-primary mr-2"></i> New Sales Order</h2>
+        <span class="badge badge-light border">Tx #{{ trans }}</span>
+      </div>
+
+      <form method="POST" action="{% url 'sellmedicine' %}">
+        {% csrf_token %}
+        <input type="hidden" name="trans" value="{{ trans }}" />
+
+        <div class="form-group">
+          <label for="tradename" class="font-weight-semibold">Customer Name <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            id="tradename"
+            placeholder="Enter customer name"
+            name="name"
+            {% if name != None and not form.errors %}
+              value="{{ name }}"
+              readonly
+            {% else %}
+              value=""
+            {% endif %}
+            required
+          />
+        </div>
+
+        <div class="form-group mb-4">
+          <label for="contact" class="font-weight-semibold">Contact Phone Number <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            id="contact"
+            placeholder="Enter 10-digit phone number"
+            name="phone"
+            {% if name != None and not form.errors %}
+              value="{{ phone }}"
+              readonly
+            {% else %}
+              value=""
+            {% endif %}
+            required
+          />
+        </div>
+
+        <hr class="my-4" />
+
+        <div class="form-group">
+          <label for="medicine" class="font-weight-semibold">Select Medicine <span class="text-danger">*</span></label>
+          <select class="custom-select" name="medicine" id="medicine" required>
+            <option value="" disabled selected>-- Select Medicine --</option>
+            {% for medicine in medicines %}
+              <option value="{{ medicine.id }}">{{ medicine.trade_name }} (Price: ₹{{ medicine.unit_selling }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group mb-4">
+          <label for="quantity" class="font-weight-semibold">Quantity <span class="text-danger">*</span></label>
+          <input
+            type="number"
+            class="form-control"
+            id="quantity"
+            placeholder="Quantity to sell"
+            name="quantity"
+            min="1"
+            value="1"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary-med btn-block">
+          <i class="fa fa-plus-circle mr-1"></i> Add to Receipt
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Right Column: Receipt Items Summary Table -->
+  <div class="col-lg-7 mb-4">
+    <div class="med-card">
+      <div class="med-card-header">
+        <h2 class="med-card-title"><i class="fa fa-list-alt text-primary mr-2"></i> Receipt Items</h2>
+        <span class="h5 font-weight-bold text-success mb-0">Total: ₹{{ total }}</span>
+      </div>
+
+      {% if list %}
+        <div class="table-responsive">
+          <table class="table-med">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Medicine</th>
+                <th>Batch</th>
+                <th>Unit Price</th>
+                <th>Qty</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in list %}
+                <tr>
+                  <th scope="row" class="text-muted">{{ forloop.counter }}</th>
+                  <td><strong>{{ item.name }}</strong></td>
+                  <td><code>{{ item.batch_id }}</code></td>
+                  <td>₹{{ item.price }}</td>
+                  <td><span class="badge badge-light border">{{ item.quantity }}</span></td>
+                  <td><strong class="text-primary">₹{{ item.total_price }}</strong></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="5" class="text-right font-weight-bold">Grand Total:</td>
+                <td><strong class="text-success h5 mb-0">₹{{ total }}</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="mt-4 text-right">
+          <form method="get" action="{% url 'printreceipt' trans %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success btn-lg" name="printreceipt">
+              <i class="fa fa-check-circle mr-1"></i> Confirm & Generate Receipt
+            </button>
+          </form>
+        </div>
+      {% else %}
+        <div class="text-center py-5">
+          <i class="fa fa-shopping-cart text-muted mb-3" style="font-size: 3rem;"></i>
+          <h4 class="text-secondary">No Items Added Yet</h4>
+          <p class="text-muted">Select a medicine and quantity from the left to add items to the receipt.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+

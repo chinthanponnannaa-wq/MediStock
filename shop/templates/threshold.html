@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Updated Threshold Levels – MediStock{% endblock %}
+
+{% block content %}
+<div class="med-card">
+  <div class="med-card-header">
+    <div>
+      <h2 class="med-card-title"><i class="fa fa-refresh text-primary mr-2"></i> Recalculated Medicine Thresholds</h2>
+      <p class="text-muted small mb-0 mt-1">Low stock threshold levels automatically recalculated based on weekly sales history.</p>
+    </div>
+    <a href="{% url 'below_threshold' %}" class="btn btn-warning btn-sm text-dark font-weight-bold">
+      <i class="fa fa-exclamation-triangle mr-1"></i> Check Low Stock Alerts
+    </a>
+  </div>
+
+  {% if threshold.all %}
+  <div class="table-responsive">
+    <table class="table-med">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Code</th>
+          <th>Trade Name</th>
+          <th>Generic Name</th>
+          <th>Vendor</th>
+          <th>Purchase Price</th>
+          <th>Selling Price</th>
+          <th>Calculated Threshold</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for med in threshold.all %}
+        <tr>
+          <th scope="row" class="text-muted">{{ forloop.counter }}</th>
+          <td><code>#{{ med.id }}</code></td>
+          <td><strong>{{ med.trade_name }}</strong></td>
+          <td>{{ med.generic_name }}</td>
+          <td>{{ med.vendor.name }}</td>
+          <td>${{ med.purchasePrice }}</td>
+          <td>${{ med.unit_selling }}</td>
+          <td><span class="badge badge-light border font-weight-bold">{{ med.threshold_value }} units</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <i class="fa fa-refresh text-muted mb-3" style="font-size: 3rem;"></i>
+    <h4 class="text-secondary">No Threshold Data Available</h4>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+

@@ -1,0 +1,76 @@
+{% extends 'base.html' %} 
+{% block title %}All Medicines – MediStock{% endblock %}
+
+{% block content %}
+<div class="med-card">
+  <div class="med-card-header">
+    <h2 class="med-card-title"><i class="fa fa-medkit text-primary mr-2"></i> All Medicines Directory</h2>
+    <a href="{% url 'newmed' %}" class="btn btn-primary-med">
+      <i class="fa fa-plus-circle mr-1"></i> Add New Medicine
+    </a>
+  </div>
+
+  {% if medicine %}
+    <div class="table-responsive">
+      <table class="table-med">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Trade Name</th>
+            <th scope="col">Generic Name</th>
+            <th scope="col">Code</th>
+            <th scope="col">Vendor</th>
+            <th scope="col">Cost Price</th>
+            <th scope="col">Selling Price</th>
+            <th scope="col">Stock & Expiry Batches</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for meditem in medicine %}
+            <tr>
+              <th scope="row" class="text-muted">{{ forloop.counter }}</th>
+              <td>
+                <strong style="color: var(--text-primary);">{{ meditem.trade_name }}</strong>
+                {% if meditem.description %}
+                  <div class="small text-muted">{{ meditem.description|truncatewords:8 }}</div>
+                {% endif %}
+              </td>
+              <td>{{ meditem.generic_name }}</td>
+              <td><code>#{{ meditem.id }}</code></td>
+              <td>
+                <span class="font-weight-semibold">{{ meditem.vendor.name }}</span>
+                <div class="small text-muted"><i class="fa fa-phone mr-1"></i>{{ meditem.vendor.phone }}</div>
+              </td>
+              <td>₹{{ meditem.purchasePrice }}</td>
+              <td><strong class="text-primary">₹{{ meditem.unit_selling }}</strong></td>
+              <td>
+                <div class="d-flex flex-column gap-1">
+                  {% for item in usable_item %}
+                    {% if item.medicine == meditem %}
+                      <div class="small py-1 border-bottom">
+                        <span class="badge badge-in-stock">Qty: {{ item.quantity }}</span> 
+                        <span class="text-muted ml-1">Exp: {{ item.expiry_date }}</span>
+                        <span class="text-muted ml-1">(Batch: {{ item.batch_id }})</span>
+                      </div>
+                    {% endif %}
+                  {% empty %}
+                    <span class="badge badge-out-stock">No Active Batches</span>
+                  {% endfor %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="text-center py-5">
+      <i class="fa fa-medkit text-muted mb-3" style="font-size: 3rem;"></i>
+      <h4 class="text-secondary">No Medicines Found</h4>
+      <p class="text-muted">Get started by adding your first medicine into MediStock.</p>
+      <a href="{% url 'newmed' %}" class="btn btn-primary-med mt-2">Add Medicine</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+

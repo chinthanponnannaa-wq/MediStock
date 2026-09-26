@@ -1,0 +1,68 @@
+{% extends 'base.html' %} 
+{% block title %}Add New Medicine – MediStock{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="med-card">
+      <div class="med-card-header">
+        <h2 class="med-card-title"><i class="fa fa-plus-circle text-primary mr-2"></i> Add New Medicine Item</h2>
+        <a href="{% url 'listOfMed' %}" class="btn btn-sm btn-outline-secondary">Back to Medicines List</a>
+      </div>
+
+      <form method="POST" action="{% url 'newmed' %}">
+        {% csrf_token %}
+
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="tradename" class="font-weight-semibold">Trade Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="tradename" placeholder="e.g. Paracetamol 500mg" name="trade_name" required>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="genericname" class="font-weight-semibold">Generic Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="genericname" placeholder="e.g. Acetaminophen" name="generic_name" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description" class="font-weight-semibold">Description</label>
+          <input type="text" class="form-control" id="description" placeholder="Brief description, dosage form, or packaging info..." name="description">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="purchaseprice" class="font-weight-semibold">Purchase Price ($) <span class="text-danger">*</span></label>
+            <input type="number" min="0.01" value="0.00" step="0.01" class="form-control" id="purchaseprice" name="purchasePrice" required>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="unitselling" class="font-weight-semibold">Selling Price ($) <span class="text-danger">*</span></label>
+            <input type="number" min="0.01" value="0.00" step="0.01" class="form-control" id="unitselling" name="unit_selling" required>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="thresholdvalue" class="font-weight-semibold">Low Stock Threshold</label>
+            <input type="number" min="0" value="10" class="form-control" id="thresholdvalue" name="threshold_value">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="vendors" class="font-weight-semibold">Supplier / Vendor <span class="text-danger">*</span></label>
+          <select class="custom-select" id="vendors" name="vendor" required>
+            <option value="" disabled selected>-- Select Supplier --</option>
+            {% for vendor in vendors %}
+              <option value="{{ vendor.id }}">{{ vendor.name }} (Phone: {{ vendor.phone }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="mt-4 text-right">
+          <a href="{% url 'listOfMed' %}" class="btn btn-secondary mr-2">Cancel</a>
+          <button type="submit" class="btn btn-primary-med">
+            <i class="fa fa-plus-circle mr-1"></i> Add Medicine
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,115 @@
+{% extends 'base.html' %} 
+
+{% block title %}Daily Average Sales Report ({{ start }} to {{ end }}) – MediStock{% endblock %}
+
+{% block content %}
+<div class="med-card">
+  <div class="med-card-header">
+    <div>
+      <h2 class="med-card-title"><i class="fa fa-calculator text-primary mr-2"></i> Daily Average Sales Report</h2>
+      <p class="text-muted small mb-0 mt-1">Period: <strong>{{ start }}</strong> to <strong>{{ end }}</strong> (Averages calculated per day)</p>
+    </div>
+    <div>
+      <button class="btn btn-outline-secondary btn-sm mr-2" onclick="window.print();">
+        <i class="fa fa-print mr-1"></i> Print Report
+      </button>
+      <a href="{% url 'average' %}" class="btn btn-primary-med btn-sm">
+        <i class="fa fa-refresh mr-1"></i> New Date Range
+      </a>
+    </div>
+  </div>
+
+  <!-- Averages Summary Cards -->
+  <div class="row mb-4">
+    {% for item in name %}
+      <div class="col-md-4 mb-3">
+        <div class="p-3 border rounded background-white">
+          <div class="text-muted small font-weight-bold text-uppercase mb-1">Avg {{ item.cus1 }} / Day</div>
+          <div class="h3 font-weight-bold text-dark mb-0">₹{{ item.cus3 }}</div>
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="col-md-4 mb-3">
+      <div class="p-3 border rounded {% if profit.col %}bg-success-light border-success{% else %}bg-danger-light border-danger{% endif %}">
+        <div class="text-muted small font-weight-bold text-uppercase mb-1">Avg Net Profit / Day</div>
+        <div class="h3 font-weight-bold {% if profit.col %}text-success{% else %}text-danger{% endif %} mb-0">₹{{ profit.cus3 }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Transactions List -->
+  <div class="mb-5">
+    <h3 class="h5 font-weight-bold mb-3"><i class="fa fa-shopping-cart text-primary mr-2"></i> Customer Transactions</h3>
+    {% if customer %}
+      <div class="table-responsive">
+        <table class="table-med">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Tx ID</th>
+              <th>Customer</th>
+              <th>Medicine</th>
+              <th>Date</th>
+              <th>Quantity</th>
+              <th class="text-right">Revenue (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for med in customer %}
+              <tr>
+                <th scope="row" class="text-muted">{{ forloop.counter }}</th>
+                <td><code>#{{ med.transaction_id }}</code></td>
+                <td>{{ med.name }}</td>
+                <td><strong>{{ med.trade_name }}</strong></td>
+                <td>{{ med.date }}</td>
+                <td><span class="badge badge-light border">{{ med.quantity }}</span></td>
+                <td class="text-right"><strong class="text-success">₹{{ med.c_revenue }}</strong></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted text-center py-3 my-0">No customer transactions recorded for this period.</p>
+    {% endif %}
+  </div>
+
+  <!-- Supplier Transactions List -->
+  <div>
+    <h3 class="h5 font-weight-bold mb-3"><i class="fa fa-truck text-primary mr-2"></i> Vendor Transactions</h3>
+    {% if vendor %}
+      <div class="table-responsive">
+        <table class="table-med">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Tx ID</th>
+              <th>Supplier</th>
+              <th>Medicine</th>
+              <th>Date</th>
+              <th>Quantity</th>
+              <th class="text-right">Cost (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for med in vendor %}
+              <tr>
+                <th scope="row" class="text-muted">{{ forloop.counter }}</th>
+                <td><code>#{{ med.transaction_id }}</code></td>
+                <td>{{ med.vendor }}</td>
+                <td><strong>{{ med.trade_name }}</strong></td>
+                <td>{{ med.date }}</td>
+                <td><span class="badge badge-light border">{{ med.quantity }}</span></td>
+                <td class="text-right"><strong class="text-danger">₹{{ med.v_cost }}</strong></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted text-center py-3 my-0">No vendor transactions recorded for this period.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

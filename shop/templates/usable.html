@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Usable Stock Inventory – MediStock{% endblock %}
+
+{% block content %}
+<div class="med-card">
+  <div class="med-card-header">
+    <h2 class="med-card-title"><i class="fa fa-check-circle text-success mr-2"></i> Usable Stock Inventory</h2>
+    <a href="{% url 'newsupply' %}" class="btn btn-primary-med">
+      <i class="fa fa-plus-circle mr-1"></i> Record New Supply
+    </a>
+  </div>
+
+  {% if usable.all %}
+    <div class="table-responsive">
+      <table class="table-med">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Medicine</th>
+            <th>Batch ID</th>
+            <th>Quantity</th>
+            <th>Order Date</th>
+            <th>Expiry Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in usable.all %}
+            <tr>
+              <th scope="row" class="text-muted">{{ forloop.counter }}</th>
+              <td><strong>{{ item.medicine.trade_name }}</strong> <span class="text-muted">({{ item.medicine.generic_name }})</span></td>
+              <td><code>{{ item.batch_id }}</code></td>
+              <td><span class="badge badge-in-stock">{{ item.quantity }} units</span></td>
+              <td>{{ item.order_date }}</td>
+              <td>{{ item.expiry_date }}</td>
+              <td><span class="badge badge-in-stock">IN STOCK</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="text-center py-5">
+      <i class="fa fa-cubes text-muted mb-3" style="font-size: 3rem;"></i>
+      <h4 class="text-secondary">No Usable Stock Items</h4>
+      <p class="text-muted">There are currently no active usable items in the inventory.</p>
+      <a href="{% url 'newsupply' %}" class="btn btn-primary-med mt-2">Record Supply</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

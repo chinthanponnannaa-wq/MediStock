@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block title %}Record Supply from {{ vendor.name }} – MediStock{% endblock %}
+{% load static %}
+
+{% block content %}
+<!-- Vendor Summary Header Card -->
+<div class="med-card mb-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h2 class="med-card-title"><i class="fa fa-truck text-primary mr-2"></i> Supplier: {{ vendor.name }}</h2>
+      <div class="text-muted small mt-1">
+        <span class="mr-3"><i class="fa fa-map-marker mr-1"></i>{{ vendor.address }}</span>
+        <span class="mr-3"><i class="fa fa-phone mr-1"></i>{{ vendor.phone }}</span>
+        <span><i class="fa fa-envelope mr-1"></i>{{ vendor.email }}</span>
+      </div>
+    </div>
+    <span class="badge badge-light border">Order Tx #{{ trans }}</span>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Supply Form -->
+  <div class="col-lg-5 mb-4">
+    <div class="med-card">
+      <div class="med-card-header">
+        <h3 class="med-card-title"><i class="fa fa-plus-circle text-primary mr-2"></i> Add Batch Item</h3>
+      </div>
+
+      <form method="POST" action="{% url 'newsupplymed' vendor.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="trans" value="{{ trans }}" />
+
+        <div class="form-group">
+          <label for="medicine" class="font-weight-semibold">Medicine <span class="text-danger">*</span></label>
+          <select class="custom-select" name="medicine" id="medicine" required>
+            <option value="" disabled selected>-- Select Medicine --</option>
+            {% for medicine in medicines %}
+              <option value="{{ medicine.id }}">{{ medicine.trade_name }} (Generic: {{ medicine.generic_name }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="batch_id" class="font-weight-semibold">Batch Number <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="batch_id" placeholder="e.g. BATCH-2026-001" name="batch_id" required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="quantity" class="font-weight-semibold">Quantity Received <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" id="quantity" placeholder="Quantity" name="quantity" min="1" value="100" required />
+          </div>
+          <div class="form-group col-md-6">
+            <label for="order_date" class="font-weight-semibold">Order Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" id="order_date" name="order_date" required />
+          </div>
+        </div>
+
+        <div class="form-group mb-4">
+          <label for="expiry_date" class="font-weight-semibold">Expiry Date <span class="text-danger">*</span></label>
+          <input type="date" class="form-control" id="expiry_date" name="expiry_date" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary-med btn-block">
+          <i class="fa fa-plus-circle mr-1"></i> Add Supply Batch
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Received Batches Summary Table -->
+  <div class="col-lg-7 mb-4">
+    <div class="med-card">
+      <div class="med-card-header">
+        <h3 class="med-card-title"><i class="fa fa-list-alt text-primary mr-2"></i> Supplied Batches List</h3>
+        <span class="h5 font-weight-bold text-success mb-0">Total Cost: ₹{{ total }}</span>
+      </div>
+
+      {% if list %}
+        <div class="table-responsive">
+          <table class="table-med">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Medicine</th>
+                <th>Batch ID</th>
+                <th>Order Date</th>
+                <th>Expiry Date</th>
+                <th>Unit Cost</th>
+                <th>Qty</th>
+                <th>Total Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in list %}
+                <tr>
+                  <th scope="row" class="text-muted">{{ forloop.counter }}</th>
+                  <td><strong>{{ item.medicine }}</strong></td>
+                  <td><code>{{ item.batch_id }}</code></td>
+                  <td>{{ item.order_date }}</td>
+                  <td>{{ item.expiry_date }}</td>
+                  <td>₹{{ item.price }}</td>
+                  <td><span class="badge badge-light border">{{ item.quantity }}</span></td>
+                  <td><strong class="text-primary">₹{{ item.total_price }}</strong></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="7" class="text-right font-weight-bold">Grand Total:</td>
+                <td><strong class="text-success h5 mb-0">₹{{ total }}</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="mt-4 text-right">
+          <form method="get" action="{% url 'printvendorreceipt' trans %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success btn-lg" name="printvendorreceipt">
+              <i class="fa fa-check-circle mr-1"></i> Confirm & Generate Vendor Invoice
+            </button>
+          </form>
+        </div>
+      {% else %}
+        <div class="text-center py-5">
+          <i class="fa fa-truck text-muted mb-3" style="font-size: 3rem;"></i>
+          <h4 class="text-secondary">No Batches Added Yet</h4>
+          <p class="text-muted">Use the form on the left to record incoming medicine batches from {{ vendor.name }}.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+

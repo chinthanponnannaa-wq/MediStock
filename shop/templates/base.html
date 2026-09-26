@@ -1,0 +1,386 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}MediStock – Medical Inventory & Billing Management System{% endblock %}</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 4 CSS & FontAwesome -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+  <link rel="shortcut icon" href="{% static 'imgs/iconimg2.png' %}" type="image/x-icon">
+
+  <style>
+    :root {
+      --primary: #0F766E;
+      --primary-dark: #115E59;
+      --bg-color: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-primary: #0F172A;
+      --text-secondary: #64748B;
+      --success: #16A34A;
+      --warning: #D97706;
+      --danger: #DC2626;
+      --border-color: #E2E8F0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+    }
+
+    /* Navbar styling */
+    .medistock-navbar {
+      background-color: var(--primary);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      padding: 0.6rem 1.5rem;
+    }
+
+    .medistock-brand {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: #FFFFFF !important;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none !important;
+      letter-spacing: -0.025em;
+    }
+
+    .medistock-brand i {
+      font-size: 1.4rem;
+      color: #99F6E4;
+    }
+
+    .medistock-navbar .nav-link {
+      color: rgba(255, 255, 255, 0.88) !important;
+      font-weight: 500;
+      font-size: 0.925rem;
+      padding: 0.5rem 0.85rem !important;
+      border-radius: 0.375rem;
+      transition: all 0.15s ease-in-out;
+    }
+
+    .medistock-navbar .nav-link:hover,
+    .medistock-navbar .nav-item.active .nav-link {
+      color: #FFFFFF !important;
+      background-color: var(--primary-dark);
+    }
+
+    .medistock-navbar .dropdown-menu {
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      margin-top: 0.5rem;
+      padding: 0.5rem 0;
+    }
+
+    .medistock-navbar .dropdown-item {
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .medistock-navbar .dropdown-item:hover {
+      background-color: var(--bg-color);
+      color: var(--primary);
+    }
+
+    /* Main Container */
+    .main-wrapper {
+      flex: 1;
+      padding-top: 2rem;
+      padding-bottom: 3rem;
+    }
+
+    /* Card styling */
+    .med-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .med-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .med-card-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    /* Buttons */
+    .btn-primary-med {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: #FFFFFF;
+      font-weight: 500;
+      border-radius: 0.375rem;
+      padding: 0.5rem 1rem;
+      transition: background-color 0.15s ease-in-out;
+    }
+
+    .btn-primary-med:hover {
+      background-color: var(--primary-dark);
+      border-color: var(--primary-dark);
+      color: #FFFFFF;
+    }
+
+    /* Status Badges */
+    .badge-in-stock {
+      background-color: #DCFCE7;
+      color: var(--success);
+      font-weight: 600;
+      padding: 0.35em 0.65em;
+      border-radius: 0.375rem;
+    }
+
+    .badge-low-stock {
+      background-color: #FEF3C7;
+      color: var(--warning);
+      font-weight: 600;
+      padding: 0.35em 0.65em;
+      border-radius: 0.375rem;
+    }
+
+    .badge-out-stock {
+      background-color: #FEE2E2;
+      color: var(--danger);
+      font-weight: 600;
+      padding: 0.35em 0.65em;
+      border-radius: 0.375rem;
+    }
+
+    .badge-expired {
+      background-color: #FFEDD5;
+      color: #C2410C;
+      font-weight: 600;
+      padding: 0.35em 0.65em;
+      border-radius: 0.375rem;
+    }
+
+    /* Custom Tables */
+    .table-med {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .table-med th {
+      background-color: #F1F5F9;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .table-med td {
+      padding: 0.875rem 1rem;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+    }
+
+    .table-med tr:last-child td {
+      border-bottom: none;
+    }
+
+    .table-med tr:hover td {
+      background-color: #F8FAFC;
+    }
+
+    /* Alert customization */
+    .medistock-alert {
+      border-radius: 0.5rem;
+      border: 1px solid var(--border-color);
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    /* Footer styling */
+    .medistock-footer {
+      background-color: #FFFFFF;
+      border-top: 1px solid var(--border-color);
+      padding: 1.5rem 0;
+      margin-top: auto;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+  </style>
+  {% block style %}{% endblock %}
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark medistock-navbar sticky-top">
+    <div class="container-fluid max-width-container">
+      <a class="medistock-brand" href="{% url 'home' %}">
+        <i class="fa fa-plus-square"></i>
+        <span>MediStock</span>
+      </a>
+      
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#medistockNav" aria-controls="medistockNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="medistockNav">
+        {% if user.is_authenticated %}
+        <ul class="navbar-nav mr-auto ml-lg-3">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'home' %}"><i class="fa fa-dashboard mr-1"></i> Dashboard</a>
+          </li>
+          
+          <!-- Medicines Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="medicinesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-medkit mr-1"></i> Medicines
+            </a>
+            <div class="dropdown-menu" aria-labelledby="medicinesDropdown">
+              <a class="dropdown-item" href="{% url 'listOfMed' %}"><i class="fa fa-list"></i> Medicine Directory</a>
+              <a class="dropdown-item" href="{% url 'newmed' %}"><i class="fa fa-plus-circle"></i> Add New Medicine</a>
+            </div>
+          </li>
+
+          <!-- Inventory Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="inventoryDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-cubes mr-1"></i> Inventory
+            </a>
+            <div class="dropdown-menu" aria-labelledby="inventoryDropdown">
+              <a class="dropdown-item" href="{% url 'usable' %}"><i class="fa fa-check-circle text-success"></i> Usable Stock</a>
+              <a class="dropdown-item" href="{% url 'below_threshold' %}"><i class="fa fa-exclamation-triangle text-warning"></i> Low Stock Alerts</a>
+              <a class="dropdown-item" href="{% url 'expired' %}"><i class="fa fa-times-circle text-danger"></i> Expired Stock</a>
+            </div>
+          </li>
+
+          <!-- Suppliers Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="supplyDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-truck mr-1"></i> Suppliers
+            </a>
+            <div class="dropdown-menu" aria-labelledby="supplyDropdown">
+              <a class="dropdown-item" href="{% url 'newsupply' %}"><i class="fa fa-shopping-basket"></i> Record New Supply</a>
+              <a class="dropdown-item" href="{% url 'addvendor' %}"><i class="fa fa-user-plus"></i> Add New Supplier</a>
+            </div>
+          </li>
+
+          <!-- Sales -->
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'sellmedicine' %}"><i class="fa fa-shopping-cart mr-1"></i> Sales</a>
+          </li>
+
+          <!-- Reports Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-line-chart mr-1"></i> Reports
+            </a>
+            <div class="dropdown-menu" aria-labelledby="reportsDropdown">
+              <a class="dropdown-item" href="{% url 'revenue' %}"><i class="fa fa-money"></i> Revenue Analysis</a>
+              <a class="dropdown-item" href="{% url 'average' %}"><i class="fa fa-calculator"></i> Daily Average Sales</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{% url 'threshold' %}"><i class="fa fa-refresh"></i> Threshold Calculator</a>
+            </div>
+          </li>
+        </ul>
+
+        <!-- Right User Profile Menu -->
+        <ul class="navbar-nav ml-auto align-items-lg-center">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-user-circle mr-2" style="font-size: 1.2rem;"></i>
+              <span class="font-weight-semibold">{{ user.username }}</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+              <div class="dropdown-header">Logged in as <strong>{{ user.username }}</strong></div>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{% url 'change_password' %}"><i class="fa fa-key mr-2"></i> Change Password</a>
+              <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fa fa-sign-out mr-2"></i> Logout</a>
+            </div>
+          </li>
+        </ul>
+        {% else %}
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Log In</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+        </ul>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  {% block menu %}{% endblock %}
+
+  <!-- Main Body Content -->
+  <div class="main-wrapper">
+    <div class="container-fluid max-width-container">
+      
+      <!-- Django Messages -->
+      {% if messages %}
+        <div class="mb-4">
+          {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show medistock-alert" role="alert">
+              <i class="fa {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} mr-2"></i>
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% block content %}
+      {% endblock %}
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="medistock-footer">
+    <div class="container-fluid text-center">
+      <div class="mb-2">
+        <strong style="color: var(--primary);"><i class="fa fa-plus-square mr-1"></i> MediStock</strong> – Medical Inventory & Billing Management System
+      </div>
+      <div class="text-muted small">
+        Smart Medical Inventory. Simple Billing. Better Management.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

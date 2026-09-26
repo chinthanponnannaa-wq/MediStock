@@ -1,0 +1,75 @@
+{% extends 'base.html' %} 
+{% block title %}Search Results – MediStock{% endblock %}
+
+{% block content %}
+<div class="med-card">
+  <div class="med-card-header">
+    <div>
+      <h2 class="med-card-title"><i class="fa fa-search text-primary mr-2"></i> Search Results</h2>
+      <p class="text-muted small mb-0 mt-1">Results for query: <strong>"{{ request.GET.search }}"</strong></p>
+    </div>
+    <form class="form-inline" method="GET" action="{% url 'search' %}">
+      <div class="input-group">
+        <input type="text" class="form-control form-control-sm" name="search" value="{{ request.GET.search }}" placeholder="Search again...">
+        <div class="input-group-append">
+          <button class="btn btn-sm btn-primary-med" type="submit"><i class="fa fa-search"></i></button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  {% if medicine %}
+    <div class="table-responsive">
+      <table class="table-med">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Trade Name</th>
+            <th scope="col">Generic Name</th>
+            <th scope="col">Code</th>
+            <th scope="col">Vendor</th>
+            <th scope="col">Purchase Price</th>
+            <th scope="col">Selling Price</th>
+            <th scope="col">Available Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for meditem in medicine %}
+            <tr>
+              <th scope="row" class="text-muted">{{ forloop.counter }}</th>
+              <td><strong>{{ meditem.trade_name }}</strong></td>
+              <td>{{ meditem.generic_name }}</td>
+              <td><code>#{{ meditem.id }}</code></td>
+              <td>{{ meditem.vendor.name }}</td>
+              <td>₹{{ meditem.purchasePrice }}</td>
+              <td><strong class="text-primary">₹{{ meditem.unit_selling }}</strong></td>
+              <td>
+                <div class="d-flex flex-column">
+                  {% for item in usable_item %}
+                    {% if item.medicine == meditem %}
+                      <div class="small py-1 border-bottom">
+                        <span class="badge badge-in-stock">Qty: {{ item.quantity }}</span> 
+                        <span class="text-muted ml-1">Exp: {{ item.expiry_date }}</span>
+                      </div>
+                    {% endif %}
+                  {% empty %}
+                    <span class="badge badge-out-stock">Out of Stock</span>
+                  {% endfor %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="text-center py-5">
+      <i class="fa fa-search-minus text-muted mb-3" style="font-size: 3rem;"></i>
+      <h4 class="text-secondary">No Matching Medicines Found</h4>
+      <p class="text-muted">No medicines matched your search query <strong>"{{ request.GET.search }}"</strong>.</p>
+      <a href="{% url 'listOfMed' %}" class="btn btn-primary-med mt-2">View All Medicines</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+

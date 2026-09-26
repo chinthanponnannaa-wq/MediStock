@@ -1,0 +1,213 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vendor Supply Invoice #{{ trans }} – MediStock</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link rel="shortcut icon" href="{% static 'imgs/iconimg2.png' %}" type="image/x-icon">
+
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+      padding: 2rem 1rem;
+    }
+
+    .receipt-box {
+      max-width: 850px;
+      margin: 0 auto;
+      background-color: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+      padding: 2.5rem;
+    }
+
+    .receipt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #E2E8F0;
+      padding-bottom: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .brand-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #0F766E;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .info-block h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748B;
+      margin-bottom: 0.5rem;
+    }
+
+    .info-block p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .table-receipt {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+    }
+
+    .table-receipt th {
+      background-color: #F1F5F9;
+      color: #475569;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 1rem;
+      border-bottom: 2px solid #CBD5E1;
+    }
+
+    .table-receipt td {
+      padding: 0.875rem 1rem;
+      border-bottom: 1px solid #E2E8F0;
+      font-size: 0.925rem;
+    }
+
+    .receipt-total {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 1rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0F766E;
+      padding-top: 1rem;
+      border-top: 2px solid #E2E8F0;
+    }
+
+    .action-bar {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media print {
+      body { background-color: #FFFFFF; padding: 0; }
+      .receipt-box { border: none; box-shadow: none; padding: 0; }
+      .action-bar { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="receipt-box">
+    <!-- Header -->
+    <div class="receipt-header">
+      <div>
+        <div class="brand-title">
+          <i class="fa fa-plus-square"></i> MediStock
+        </div>
+        <div class="text-muted small">Medical Inventory & Billing Management System</div>
+      </div>
+      <div class="text-right">
+        <h3 class="h4 font-weight-bold text-dark mb-1">SUPPLIER INVOICE</h3>
+        <div class="text-muted small">Transaction No: <strong>#{{ trans }}</strong></div>
+        <div class="text-muted small">Date: <strong>{{ date|date:"F d, Y" }}</strong></div>
+      </div>
+    </div>
+
+    <!-- Store & Supplier Info -->
+    <div class="info-grid">
+      <div class="info-block">
+        <h4>Received By</h4>
+        <p><strong>MediStock Central Store</strong></p>
+        <p>Inventory Department</p>
+        <p>Email: contact@medistock.com</p>
+      </div>
+
+      <div class="info-block text-right">
+        <h4>Supplier Details</h4>
+        <p><strong>{{ name }}</strong></p>
+        <p>{{ address }}</p>
+        <p>Phone: {{ phone }}</p>
+        <p>Email: {{ email }}</p>
+      </div>
+    </div>
+
+    <!-- Supplied Items Table -->
+    <table class="table-receipt">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Medicine Name</th>
+          <th>Batch ID</th>
+          <th>Order Date</th>
+          <th>Expiry Date</th>
+          <th>Unit Cost</th>
+          <th class="text-center">Qty</th>
+          <th class="text-right">Total Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in list %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><strong>{{ item.obj.medicine.trade_name }}</strong></td>
+            <td><code>{{ item.obj.batch_id }}</code></td>
+            <td>{{ item.obj.date }}</td>
+            <td>{{ item.obj.expiry_date }}</td>
+            <td>₹{{ item.obj.medicine.purchasePrice }}</td>
+            <td class="text-center">{{ item.obj.quantity }}</td>
+            <td class="text-right"><strong>₹{{ item.total_price }}</strong></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Total -->
+    <div class="receipt-total">
+      <span>Total Amount Payable:</span>
+      <span>₹{{ total }}</span>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-bar">
+      <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+        <i class="fa fa-arrow-left mr-1"></i> Back to Dashboard
+      </a>
+      <div>
+        <a href="{% url 'newsupply' %}" class="btn btn-primary-med mr-2" style="background-color: #0F766E; border-color: #0F766E; color: white;">
+          <i class="fa fa-truck mr-1"></i> New Supply
+        </a>
+        <button class="btn btn-success" onclick="window.print();">
+          <i class="fa fa-print mr-1"></i> Print Invoice
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
